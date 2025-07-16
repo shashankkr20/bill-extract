@@ -29,10 +29,14 @@ print("🔑 Gemini API key found")
 # Import and run the application
 if __name__ == "__main__":
     import uvicorn
+    
+    # Get port from environment variable (for Render) or default to 8000
+    port = int(os.getenv("PORT", 8000))
+    
     uvicorn.run(
         "main:app",
-        host="localhost",
-        port=8000,
+        host="0.0.0.0",  # Bind to all interfaces for Render
+        port=port,
         reload=True,
         log_level="info"
     ) 
