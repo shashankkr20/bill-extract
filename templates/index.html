@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Information Extraction System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #1f2937;
+            --light-color: #f9fafb;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark-color);
+        }
+
+        .main-container {
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 16px 16px 0 0 !important;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .upload-area {
+            border: 3px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: var(--light-color);
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color), #d97706);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 4px;
+            background: var(--border-color);
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 4px;
+        }
+
+        .result-card {
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+        
+        .results-container {
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .results-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            gap: 20px;
+            padding: 0 20px;
+        }
+        
+        .results-col {
+            flex: 0 0 calc(50% - 10px);
+            max-width: calc(50% - 10px);
+            min-width: 300px;
+            margin-bottom: 1rem;
+        }
+        
+        .results-col.full-width {
+            flex: 0 0 100%;
+            max-width: 100%;
+            min-width: 100%;
+        }
+        
+        /* Large screens */
+        @media (min-width: 1200px) {
+            .results-section-container {
+                max-width: 1200px !important;
+            }
+            
+            .results-row {
+                max-width: 1200px !important;
+                gap: 30px !important;
+            }
+            
+            .results-col {
+                flex: 0 0 calc(50% - 15px) !important;
+                max-width: calc(50% - 15px) !important;
+            }
+        }
+        
+        /* Medium screens */
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .results-section-container {
+                max-width: 900px !important;
+            }
+            
+            .results-row {
+                max-width: 900px !important;
+                gap: 25px !important;
+            }
+            
+            .results-col {
+                flex: 0 0 calc(50% - 12.5px) !important;
+                max-width: calc(50% - 12.5px) !important;
+            }
+        }
+        
+        /* Small screens */
+        @media (max-width: 767px) {
+            .results-section-container {
+                max-width: 100% !important;
+            }
+            
+            .results-col {
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+                min-width: 100% !important;
+            }
+            
+            .results-row {
+                gap: 15px !important;
+                padding: 0 15px !important;
+            }
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .info-value {
+            color: #6b7280;
+            text-align: right;
+        }
+
+        .items-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .items-table th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 500;
+            border: none;
+        }
+
+        .loading-spinner {
+            display: none;
+        }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        #extractionResults {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 100%;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .result-card {
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 1rem;
+            width: 100%;
+            max-width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Ensure proper container constraints */
+        .container {
+            max-width: 100% !important;
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+        }
+        
+        .col-lg-10 {
+            max-width: 100% !important;
+        }
+        
+        /* Results section wrapper - completely independent of Bootstrap */
+        .results-section-wrapper {
+            width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 0 20px !important;
+        }
+        
+        .results-section-container {
+            width: 100% !important;
+            max-width: 1000px !important;
+            margin: 0 auto !important;
+        }
+        
+        /* Force centering for all screen sizes */
+        .results-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        
+        .results-row {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+            align-items: stretch !important;
+            width: 100% !important;
+            max-width: 1000px !important;
+            margin: 0 auto !important;
+            gap: 20px !important;
+            padding: 0 20px !important;
+        }
+        
+        .results-col {
+            flex: 0 0 calc(50% - 10px) !important;
+            max-width: calc(50% - 10px) !important;
+            min-width: 300px !important;
+            margin-bottom: 1rem !important;
+        }
+        
+        .results-col.full-width {
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+            min-width: 100% !important;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+            
+            .export-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="container">
+            <!-- Header -->
+            <div class="row justify-content-center mb-4">
+                <div class="col-lg-10">
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <h1 class="mb-0">
+                                <i class="fas fa-receipt me-2"></i>
+                                Bill Information Extraction System
+                            </h1>
+                            <p class="mb-0 mt-2 opacity-75">
+                                Extract structured information from bill images using advanced AI technology
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="row justify-content-center mb-4">
+                <div class="col-lg-10">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <h5 class="section-title">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                Upload Bill Image
+                            </h5>
+                            
+                            <div class="upload-area" id="uploadArea">
+                                <div class="upload-icon">
+                                    <i class="fas fa-file-image"></i>
+                                </div>
+                                <h5 class="mb-2">Drag & Drop your bill image here</h5>
+                                <p class="text-muted mb-3">or click to browse files</p>
+                                <p class="small text-muted">
+                                    Supported formats: JPG, PNG, PDF (Max size: 10MB)
+                                </p>
+                                <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf" style="display: none;">
+                                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                                    <i class="fas fa-folder-open me-2"></i>
+                                    Choose File
+                                </button>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="progress mt-3" id="progressBar" style="display: none;">
+                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+
+                            <!-- Loading Spinner -->
+                            <div class="text-center mt-3 loading-spinner" id="loadingSpinner">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Processing your bill image...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section-wrapper" id="resultsSection" style="display: none;">
+                <div class="results-section-container">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="section-title mb-0">
+                                    <i class="fas fa-check-circle text-success"></i>
+                                    Extraction Results
+                                </h5>
+                                <div class="export-buttons">
+                                    <button class="btn btn-success btn-sm" onclick="exportData('pdf')">
+                                        <i class="fas fa-file-pdf me-1"></i> PDF
+                                    </button>
+                                    <button class="btn btn-warning btn-sm" onclick="exportData('excel')">
+                                        <i class="fas fa-file-excel me-1"></i> Excel
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" onclick="exportData('csv')">
+                                        <i class="fas fa-file-csv me-1"></i> CSV
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="extractionResults">
+                                <!-- Results will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div class="row justify-content-center mt-4">
+                <div class="col-lg-10">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <h5 class="section-title">
+                                <i class="fas fa-history"></i>
+                                Recent Extractions
+                            </h5>
+                            <div id="extractionHistory">
+                                <!-- History will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+        <div id="alertContainer"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentExtractionId = null;
+
+        // File upload handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const progressBar = document.getElementById('progressBar');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const resultsSection = document.getElementById('resultsSection');
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        function handleFileUpload(file) {
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+            if (!allowedTypes.includes(file.type)) {
+                showAlert('Invalid file type. Please upload JPG, PNG, or PDF files.', 'danger');
+                return;
+            }
+
+            // Validate file size (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showAlert('File size too large. Maximum size is 10MB.', 'danger');
+                return;
+            }
+
+            uploadFile(file);
+        }
+
+        async function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Show progress
+            progressBar.style.display = 'block';
+            loadingSpinner.style.display = 'block';
+            resultsSection.style.display = 'none';
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    currentExtractionId = result.id;
+                    displayResults(result.data);
+                    showAlert('Bill processed successfully!', 'success');
+                    loadExtractionHistory();
+                } else {
+                    showAlert(result.detail || 'Error processing file', 'danger');
+                }
+            } catch (error) {
+                showAlert('Network error. Please try again.', 'danger');
+            } finally {
+                progressBar.style.display = 'none';
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        function displayResults(data) {
+            const resultsContainer = document.getElementById('extractionResults');
+            const resultsSection = document.getElementById('resultsSection');
+            
+            // Check if we have valid data to display
+            if (!data || (Object.keys(data).length === 0)) {
+                resultsSection.style.display = 'none';
+                return;
+            }
+            
+            let html = `
+                <div class="results-container">
+                    <div class="results-row">
+                        <!-- Invoice Information -->
+                        <div class="results-col">
+                            <div class="card result-card">
+                                <div class="card-body">
+                                    <h6 class="section-title">
+                                        <i class="fas fa-file-invoice"></i>
+                                        Invoice Information
+                                    </h6>
+                                    <div class="info-item">
+                                        <span class="info-label">Invoice Number:</span>
+                                        <span class="info-value">${data.invoice_number || 'N/A'}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Invoice Date:</span>
+                                        <span class="info-value">${data.invoice_date || 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Summary Information -->
+                        <div class="results-col">
+                            <div class="card result-card">
+                                <div class="card-body">
+                                    <h6 class="section-title">
+                                        <i class="fas fa-calculator"></i>
+                                        Summary
+                                    </h6>
+                                    <div class="info-item">
+                                        <span class="info-label">Subtotal:</span>
+                                        <span class="info-value">${data.summary?.subtotal || 'N/A'}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Tax Amount:</span>
+                                        <span class="info-value">${data.summary?.tax_amount || 'N/A'}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Discount:</span>
+                                        <span class="info-value">${data.summary?.discount || 'N/A'}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Net Payable:</span>
+                                        <span class="info-value fw-bold text-primary">${data.summary?.net_payable_amount || 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seller and Buyer Information -->
+                    <div class="results-row">
+                        <div class="results-col">
+                            <div class="card result-card">
+                                <div class="card-body">
+                                    <h6 class="section-title">
+                                        <i class="fas fa-store"></i>
+                                        Seller Information
+                                    </h6>
+                                    <div class="info-item">
+                                        <span class="info-label">Name:</span>
+                                        <span class="info-value">${data.seller?.name || 'N/A'}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Address:</span>
+                                        <span class="info-value">${data.seller?.address || 'N/A'}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">GSTIN:</span>
+                                        <span class="info-value">${data.seller?.gstin || 'N/A'}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Contact:</span>
+                                        <span class="info-value">${data.seller?.contact_number || 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="results-col">
+                            <div class="card result-card">
+                                <div class="card-body">
+                                    <h6 class="section-title">
+                                        <i class="fas fa-user"></i>
+                                        Buyer Information
+                                    </h6>
+                                    <div class="info-item">
+                                        <span class="info-label">Name:</span>
+                                        <span class="info-value">${data.buyer?.name || 'N/A'}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Address:</span>
+                                        <span class="info-value">${data.buyer?.address || 'N/A'}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">GSTIN:</span>
+                                        <span class="info-value">${data.buyer?.gstin || 'N/A'}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Contact:</span>
+                                        <span class="info-value">${data.buyer?.contact_number || 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Items table
+            if (data.items && data.items.length > 0) {
+                html += `
+                    <div class="results-row">
+                        <div class="results-col full-width">
+                            <div class="card result-card">
+                                <div class="card-body">
+                                    <h6 class="section-title">
+                                        <i class="fas fa-list"></i>
+                                        Items
+                                    </h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover items-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Item Name</th>
+                                                    <th>Quantity</th>
+                                                    <th>Price/Unit</th>
+                                                    <th>Tax Rate</th>
+                                                    <th>Total Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${data.items.map(item => `
+                                                    <tr>
+                                                        <td>${item.name || 'N/A'}</td>
+                                                        <td>${item.quantity || 'N/A'}</td>
+                                                        <td>${item.price_per_unit || 'N/A'}</td>
+                                                        <td>${item.tax_rate || 'N/A'}</td>
+                                                        <td>${item.total_amount || 'N/A'}</td>
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            resultsContainer.innerHTML = html;
+            resultsSection.style.display = 'block';
+        }
+
+        async function exportData(format) {
+            if (!currentExtractionId) {
+                showAlert('No extraction to export', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/export/${currentExtractionId}?format=${format}`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `bill_extraction_${currentExtractionId}.${format}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    showAlert(`Exported successfully as ${format.toUpperCase()}`, 'success');
+                } else {
+                    showAlert('Export failed', 'danger');
+                }
+            } catch (error) {
+                showAlert('Export error', 'danger');
+            }
+        }
+
+        async function loadExtractionHistory() {
+            try {
+                const response = await fetch('/extractions');
+                const extractions = await response.json();
+
+                const historyContainer = document.getElementById('extractionHistory');
+                
+                if (extractions.length === 0) {
+                    historyContainer.innerHTML = '<p class="text-muted text-center">No extractions found</p>';
+                    return;
+                }
+
+                let html = '';
+                extractions.slice(0, 5).forEach(extraction => {
+                    const date = new Date(extraction.processed_at).toLocaleDateString();
+                    html += `
+                        <div class="card result-card mb-2">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">${extraction.filename}</h6>
+                                        <small class="text-muted">Processed on ${date}</small>
+                                    </div>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" onclick="viewExtraction(${extraction.id})">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" onclick="deleteExtraction(${extraction.id})">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                historyContainer.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading history:', error);
+            }
+        }
+
+        async function viewExtraction(id) {
+            try {
+                const response = await fetch(`/extractions/${id}`);
+                const extraction = await response.json();
+                
+                currentExtractionId = extraction.id;
+                displayResults(extraction.extracted_data);
+                
+                // Only scroll if results are actually displayed
+                const resultsSection = document.getElementById('resultsSection');
+                if (resultsSection.style.display !== 'none') {
+                    resultsSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch (error) {
+                showAlert('Error loading extraction', 'danger');
+            }
+        }
+
+        async function deleteExtraction(id) {
+            if (!confirm('Are you sure you want to delete this extraction?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/extractions/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showAlert('Extraction deleted successfully', 'success');
+                    loadExtractionHistory();
+                    if (currentExtractionId === id) {
+                        resultsSection.style.display = 'none';
+                        currentExtractionId = null;
+                    }
+                } else {
+                    showAlert('Error deleting extraction', 'danger');
+                }
+            } catch (error) {
+                showAlert('Error deleting extraction', 'danger');
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertId = 'alert-' + Date.now();
+            
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" id="${alertId}" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            alertContainer.innerHTML = alertHtml;
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                const alert = document.getElementById(alertId);
+                if (alert) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Load history on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hide results section initially
+            const resultsSection = document.getElementById('resultsSection');
+            if (resultsSection) {
+                resultsSection.style.display = 'none';
+            }
+            
+            loadExtractionHistory();
+            
+            // Force refresh styles
+            const styleSheets = document.styleSheets;
+            for (let i = 0; i < styleSheets.length; i++) {
+                try {
+                    styleSheets[i].disabled = true;
+                    styleSheets[i].disabled = false;
+                } catch (e) {
+                    // Ignore errors for external stylesheets
+                }
+            }
+        });
+        
+        // Force hard refresh function
+        function forceRefresh() {
+            window.location.reload(true);
+        }
+    </script>
+</body>
+</html> 

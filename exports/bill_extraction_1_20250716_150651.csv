@@ -1,0 +1,32 @@
+Invoice Information,,,,
+Invoice Number,Inv-5,,,
+Invoice Date,2025-01-10,,,
+,,,,
+Seller Information,,,,
+Name,SUNRISE ENTERPRISE,,,
+Address,,,,
+GSTIN,07BGUPD3647XXXX,,,
+Contact Number,,,,
+,,,,
+Buyer Information,,,,
+Name,Rajiv Gupta,,,
+Address,"#S-50, 3rd PTC Building, I.T. Estate, Delhi-1358XX",,,
+GSTIN,HVBADAXX456,,,
+Contact Number,,,,
+,,,,
+Items Information,,,,
+Item Name,Quantity,Price/Unit,Tax Rate,Total Amount
+Best Ball Pen,2,10.0,12,22.4
+Executive Diary,8,590.0,12,5286.4
+Leather Portfolio Folder,2,630.0,12,1411.2
+Wireless Mouse,9,520.0,18,5522.4
+A4 Document File,5,420.0,12,2352.0
+Power Bank 10000mAh,9,570.0,12,5745.6
+USB Flash Drive,12,999.0,18,14145.84
+Bluetooth Keyboard,4,750.0,18,3540.0
+,,,,
+Summary Information,,,,
+Subtotal,32898,,,
+Tax Amount,5127.84,,,
+Discount,,,,
+Net Payable Amount,38026.0,,,
