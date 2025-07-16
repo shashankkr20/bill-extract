@@ -2,6 +2,12 @@
 
 A comprehensive full-stack application that extracts structured information from bill images using Google's Gemini AI technology. Built with FastAPI backend and a modern, responsive frontend.
 
+## 🌐 Live Demo
+
+**Try it out:** [https://bill-extract-d5yl.onrender.com/](https://bill-extract-d5yl.onrender.com/)
+
+> **Note:** This is a free instance hosted on Render, so response times may be slower than expected. The application may take a few seconds to wake up from sleep mode on the first request.
+
 ## 🚀 Features
 
 ### Core Functionality
@@ -242,4 +248,4 @@ Stay updated with the latest features and improvements by:
 
 ---
 
-**Note**: This application requires a valid Google Gemini API key to function. Make sure to obtain one from the Google AI Studio before running the application. 
+**Note**: This application requires a valid Google Gemini API key to function. Make sure to obtain one from the Google AI Studio before running the application. #
